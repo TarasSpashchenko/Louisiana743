@@ -6,15 +6,16 @@ import com.linkedin.parseq.Task;
 import com.linkedin.parseq.trace.TraceUtil;
 import com.ts.louisiana.engine.api.JobTaskBuilder;
 import com.ts.louisiana.metadata.ActionImpl;
-import com.ts.louisiana.metadata.ActionType;
-import com.ts.louisiana.metadata.EntityType;
-import com.ts.louisiana.metadata.Job;
+import com.ts.louisiana.metadata.MappingImpl;
+import com.ts.louisiana.metadata.api.ActionType;
+import com.ts.louisiana.metadata.api.Job;
 import com.ts.louisiana.metadata.JobImpl;
-import com.ts.louisiana.metadata.Mapping;
-import com.ts.louisiana.metadata.Node;
-import com.ts.louisiana.types.MarcEntity;
-import com.ts.louisiana.types.stub.MarcEntityStub;
+import com.ts.louisiana.metadata.api.Mapping;
+import com.ts.louisiana.metadata.api.Node;
+import com.ts.louisiana.types.EntityObject;
+import com.ts.louisiana.types.stub.EntityObjectyImpl;
 import com.ts.test.EngineContainer;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -28,7 +29,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -42,7 +42,7 @@ public class UseCase003Test001 {
     private static final String SRS_MARC_FILE_NAME = "1b74ab75-9f41-4837-8662-a1d99118008d.json";
 
     @Autowired
-    private JobTaskBuilder<MarcEntity> jobTaskBuilder;
+    private JobTaskBuilder<JsonObject> jobTaskBuilder;
 
     private Engine parseqEngine;
     private ExecutorService taskScheduler;
@@ -157,36 +157,38 @@ public class UseCase003Test001 {
     private Job createJobWithCreateActions() {
         JobImpl job = new JobImpl();
 
-        job.add(new ActionImpl(ActionType.CREATE, EntityType.INSTANCE, new Mapping() { }));
+        job.add(new ActionImpl(ActionType.CREATE, "INSTANCE", new MappingImpl()));
 
         Node topLevelAction = job.getChild(0);
-        topLevelAction.add(new ActionImpl(ActionType.CREATE, EntityType.HOLDINGS, new Mapping() { }));
-        topLevelAction.add(new ActionImpl(ActionType.CREATE, EntityType.ITEM, new Mapping() { }));
-        topLevelAction.getChild(0).add(new ActionImpl(ActionType.CREATE, EntityType.ITEM, new Mapping() { }));
+        topLevelAction.add(new ActionImpl(ActionType.CREATE, "HOLDINGS", new MappingImpl()));
+        topLevelAction.add(new ActionImpl(ActionType.CREATE, "ITEM", new MappingImpl()));
+        topLevelAction.getChild(0).add(new ActionImpl(ActionType.CREATE, "ITEM", new MappingImpl()));
 
-        job.add(new ActionImpl(ActionType.CREATE, EntityType.HOLDINGS, new Mapping() { }));
-        job.add(new ActionImpl(ActionType.CREATE, EntityType.ITEM, new Mapping() { }));
-        job.add(new ActionImpl(ActionType.CREATE, EntityType.MARCCAT, new Mapping() { }));
+        job.add(new ActionImpl(ActionType.CREATE, "HOLDINGS", new MappingImpl()));
+        job.add(new ActionImpl(ActionType.CREATE, "ITEM", new MappingImpl()));
+        job.add(new ActionImpl(ActionType.CREATE, "MARCCAT", new MappingImpl()));
 
         return job;
     }
 
     private Job createJobWithCreateInstanceActions() {
-        JobImpl job = new JobImpl("Test Job Profile 001");
+        JobImpl job = new JobImpl("Test Job Profile 002");
 
-        job.add(new ActionImpl("Create Instance 1", ActionType.CREATE, EntityType.INSTANCE, new Mapping() { }));
+        job.add(new ActionImpl("Create Instance 1", ActionType.CREATE, "INSTANCE", new MappingImpl()));
         Node topLevelAction = job.getChild(0);
-        topLevelAction.add(new ActionImpl("Create Instance 1.1", ActionType.CREATE, EntityType.INSTANCE, new Mapping() { }));
-        topLevelAction.add(new ActionImpl("Create Holdings 1.1", ActionType.CREATE, EntityType.HOLDINGS, new Mapping() { }));
+        topLevelAction.add(new ActionImpl("Create Instance 1.1", ActionType.CREATE, "INSTANCE", new MappingImpl()));
+        topLevelAction.add(new ActionImpl("Create Holdings 1.1", ActionType.CREATE, "HOLDINGS", new MappingImpl()));
 
-        job.add(new ActionImpl("Create Instance 2", ActionType.CREATE, EntityType.INSTANCE, new Mapping() { }));
+        job.add(new ActionImpl("Create Instance 2", ActionType.CREATE, "INSTANCE", new MappingImpl()));
         topLevelAction = job.getChild(1);
-        topLevelAction.add(new ActionImpl("Create Instance 2.1", ActionType.CREATE, EntityType.INSTANCE, new Mapping() { }));
-        topLevelAction.add(new ActionImpl("Create Holdings 2.1", ActionType.CREATE, EntityType.HOLDINGS, new Mapping() { }));
+        topLevelAction.add(new ActionImpl("Create Instance 2.1", ActionType.CREATE, "INSTANCE", new MappingImpl()));
+        topLevelAction.add(new ActionImpl("Create Holdings 2.1", ActionType.CREATE, "HOLDINGS", new MappingImpl()));
 
 
-        job.add(new ActionImpl("Create Instance 3", ActionType.CREATE, EntityType.INSTANCE, new Mapping() { }));
-        job.add(new ActionImpl("Create Holdings 1", ActionType.CREATE, EntityType.HOLDINGS, new Mapping() { }));
+        job.add(new ActionImpl("Create Instance 3", ActionType.CREATE, "INSTANCE", new MappingImpl()));
+        job.add(new ActionImpl("Create Holdings 1", ActionType.CREATE, "HOLDINGS", new MappingImpl()));
+
+        log.info(Json.encodePrettily(job));
 
         return job;
     }
@@ -194,6 +196,76 @@ public class UseCase003Test001 {
     @Test
     public void simpleTest002() {
         Task<?> jobTask = jobTaskBuilder.buildJobTask(createJobWithCreateInstanceActions(), getSourceRecordStorageMarcEntity());
+//        jobTask = jobTask.onFailure("Error ", Throwable::printStackTrace);
+
+
+        EngineContainer engineContainer = initParSeqEngine();
+        try {
+            parseqEngine.run(jobTask);
+            jobTask.await();
+            log.info("\n{}\n", TraceUtil.getJsonTrace(jobTask));
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            shutdownParSeqEngine(engineContainer);
+        }
+
+    }
+
+    private Job createJobWithUpdateInstanceActions() {
+        JobImpl job = new JobImpl("Test Job Profile 003");
+        job.add(new ActionImpl("Create Item", ActionType.CREATE, "ITEM", new MappingImpl()));
+        job.add(new ActionImpl("Create OrderLine", ActionType.CREATE, "ORDER_LINE", new MappingImpl()));
+        job.add(new ActionImpl("Update Instance", ActionType.UPDATE, "INSTANCE", new MappingImpl()));
+        job.add(new ActionImpl("Update Holdings", ActionType.UPDATE, "HOLDINGS", new MappingImpl()));
+        job.add(new ActionImpl("Update Item", ActionType.UPDATE, "ITEM", new MappingImpl()));
+
+        log.info(Json.encodePrettily(job));
+        return job;
+    }
+
+    @Test
+    public void simpleTest003() {
+        Task<?> jobTask = jobTaskBuilder.buildJobTask(createJobWithUpdateInstanceActions(), getSourceRecordStorageMarcEntity());
+//        jobTask = jobTask.onFailure("Error ", Throwable::printStackTrace);
+
+
+        EngineContainer engineContainer = initParSeqEngine();
+        try {
+            parseqEngine.run(jobTask);
+            jobTask.await();
+            log.info("\n{}\n", TraceUtil.getJsonTrace(jobTask));
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            shutdownParSeqEngine(engineContainer);
+        }
+
+    }
+
+    private Job createJobWithCreateUpdateInstanceActions() {
+        JobImpl job = new JobImpl("Test Job Profile 003");
+        job.add(new ActionImpl("Create Instance", ActionType.CREATE, "INSTANCE", new MappingImpl()));
+        job.add(new ActionImpl("Update Instance", ActionType.UPDATE, "INSTANCE", new MappingImpl()));
+//        job.add(new ActionImpl("Update Holdings", ActionType.UPDATE, "HOLDINGS", new MappingImpl()));
+//        job.add(new ActionImpl("Update Item", ActionType.UPDATE, "ITEM", new MappingImpl()));
+
+        log.info(Json.encodePrettily(job));
+        return job;
+    }
+
+    @Test
+    public void simpleTest004() {
+        Task<?> jobTask = jobTaskBuilder.buildJobTask(createJobWithCreateUpdateInstanceActions(), getSourceRecordStorageMarcEntity());
+//        jobTask = jobTask.onFailure("Error ", Throwable::printStackTrace);
 
 
         EngineContainer engineContainer = initParSeqEngine();
@@ -214,10 +286,10 @@ public class UseCase003Test001 {
     }
 
 
-    private MarcEntity getSourceRecordStorageMarcEntity() {
+    private EntityObject<JsonObject> getSourceRecordStorageMarcEntity() {
         try (InputStream marcRecord = Thread.currentThread().getContextClassLoader().getResourceAsStream(SRS_MARC_FILE_NAME)) {
             JsonObject jsonObject = new JsonObject(IOUtils.toString(marcRecord, StandardCharsets.UTF_8));
-            return new MarcEntityStub(jsonObject);
+            return new EntityObjectyImpl("MARC", jsonObject);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -1,4 +1,4 @@
-package com.ts.louisiana.metadata;
+package com.ts.louisiana.metadata.api;
 
 public enum ActionType {
     CREATE,

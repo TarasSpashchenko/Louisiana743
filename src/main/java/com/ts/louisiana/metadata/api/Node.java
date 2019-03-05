@@ -1,4 +1,4 @@
-package com.ts.louisiana.metadata;
+package com.ts.louisiana.metadata.api;
 
 import com.ts.louisiana.engine.api.ProfileVisitor;
 
@@ -11,6 +11,7 @@ public interface Node {
     <T extends Node> T getChild(int i);
 
     String getName();
+    String getNodeType();
 
     void accept(ProfileVisitor visitor);
 }

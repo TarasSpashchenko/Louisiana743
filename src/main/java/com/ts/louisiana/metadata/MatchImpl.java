@@ -1,6 +1,9 @@
 package com.ts.louisiana.metadata;
 
 import com.ts.louisiana.engine.api.ProfileVisitor;
+import com.ts.louisiana.metadata.api.Match;
+import com.ts.louisiana.metadata.api.MatchCriteria;
+import com.ts.louisiana.metadata.api.Node;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,23 +14,23 @@ public class MatchImpl extends NodeImpl implements Match {
 
     private final MatchCriteria matchCriteria;
 
-    private final  EntityType matchEntityType;
+    private final  String matchEntityType;
 
-    public MatchImpl(EntityType matchEntityType, MatchCriteria matchCriteria) {
+    public MatchImpl(String matchEntityType, MatchCriteria matchCriteria) {
         super();
         this.matchEntityType = matchEntityType;
         this.matchCriteria = matchCriteria;
     }
 
-    public MatchImpl(String name, EntityType matchEntityType, MatchCriteria matchCriteria) {
+    public MatchImpl(String name, String matchEntityType, MatchCriteria matchCriteria) {
         super(name);
         this.matchEntityType = matchEntityType;
         this.matchCriteria = matchCriteria;
     }
 
     @Override
-    public EntityType getMatchEntityType() {
-        return null;
+    public String getMatchEntityType() {
+        return matchEntityType;
     }
 
     @Override

@@ -1,7 +1,5 @@
 package com.ts.louisiana.engine.api;
 
-import com.ts.louisiana.metadata.EntityType;
-
-public interface MapperFactory {
-    <P, R> Mapper<P, R> getMapper(EntityType from, EntityType to);
+public interface MapperFactory<T> {
+     Mapper<T> getMapper(String fromEntityType, String toEntityType);
 }

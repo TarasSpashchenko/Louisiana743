@@ -1,5 +1,7 @@
 package com.ts.louisiana.metadata;
 
+import com.ts.louisiana.metadata.api.Node;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,5 +45,10 @@ abstract class NodeImpl implements Node {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String getNodeType() {
+        return getClass().getName();
     }
 }

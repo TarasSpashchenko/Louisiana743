@@ -1,7 +1,7 @@
-package com.ts.louisiana.metadata;
+package com.ts.louisiana.metadata.api;
 
 public interface Action extends Node {
     ActionType getActionType();
-    EntityType getEntityType();
+    String getEntityType();
     Mapping getMapping();
 }

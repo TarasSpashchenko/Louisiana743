@@ -2,7 +2,7 @@ package com.ts.louisiana.engine.toolkit;
 
 import com.linkedin.parseq.Task;
 import com.ts.louisiana.engine.api.JobHandler;
-import com.ts.louisiana.metadata.Node;
+import com.ts.louisiana.metadata.api.Node;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;

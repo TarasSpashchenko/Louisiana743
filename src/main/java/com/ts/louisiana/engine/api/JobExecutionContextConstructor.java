@@ -1,8 +1,7 @@
 package com.ts.louisiana.engine.api;
 
-import com.ts.louisiana.metadata.EntityType;
+import com.ts.louisiana.types.EntityObject;
 
 public interface JobExecutionContextConstructor {
-    <T> JobExecutionContext createJobExecutionContext(EntityType sourceEntityType, T sourceRecordEntity);
-
+    <T> JobExecutionContext<T> createJobExecutionContext(EntityObject<T> sourceRecordEntity);
 }

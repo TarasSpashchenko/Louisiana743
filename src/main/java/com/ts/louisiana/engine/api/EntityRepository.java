@@ -1,25 +1,14 @@
 package com.ts.louisiana.engine.api;
 
-import com.ts.louisiana.types.HoldingsEntity;
-import com.ts.louisiana.types.InstanceEntity;
-import com.ts.louisiana.types.ItemEntity;
-import com.ts.louisiana.types.OrderLineEntity;
+import com.ts.louisiana.types.EntityObject;
+import io.vertx.core.json.JsonObject;
 
-public interface EntityRepository {
-    ItemEntity findItemBy(QueryCriteria queryCriteria);
+public interface EntityRepository<T> {
+    EntityObject<T> findByQueryCriteria(String requiredEntityType, QueryCriteria queryCriteria);
+    EntityObject<T> findByEntityObject(String requiredEntityType, EntityObject<T> byEntityObject);
 
-    InstanceEntity findInstanceByHoldings(HoldingsEntity holdingsEntity);
-    HoldingsEntity findHoldingsByItem(ItemEntity itemEntity);
-    ItemEntity findItemByOrderLine(OrderLineEntity orderLineEntity);
+    EntityObject<T> createEntityObject(String entityType);
+    EntityObject<T> createEntityObject(String entityType, T entity);
 
-    ItemEntity createItemEntity();
-    HoldingsEntity createHoldingsEntity();
-    InstanceEntity createInstanceEntity();
-    OrderLineEntity createOrderLineEntity();
-
-    InstanceEntity storeInstanceEntity(InstanceEntity instanceEntity);
-    HoldingsEntity storeHoldingsEntity(HoldingsEntity holdingsEntity);
-    ItemEntity storeItemEntity(ItemEntity itemEntity);
-    OrderLineEntity storeOrderLineEntity(OrderLineEntity orderLineEntity);
-
+    EntityObject<T> storeEntity(EntityObject<T> entityObject);
 }

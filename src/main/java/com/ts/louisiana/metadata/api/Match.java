@@ -1,9 +1,9 @@
-package com.ts.louisiana.metadata;
+package com.ts.louisiana.metadata.api;
 
 import java.util.List;
 
 public interface Match extends Node {
-    EntityType getMatchEntityType();
+    String getMatchEntityType();
 
     MatchCriteria getMatchCriteria();
 

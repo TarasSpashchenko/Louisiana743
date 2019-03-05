@@ -1,24 +1,15 @@
 package com.ts.louisiana.engine.api;
 
-import com.ts.louisiana.metadata.EntityType;
-import com.ts.louisiana.types.ContextObject;
-import com.ts.louisiana.types.HoldingsEntity;
-import com.ts.louisiana.types.InstanceEntity;
-import com.ts.louisiana.types.ItemEntity;
+import com.ts.louisiana.types.EntityObject;
 
-public interface JobExecutionContext {
-    EntityType getSourceEntityType();
+public interface JobExecutionContext<T> {
+    String getSourceEntityType();
 
-    <T> T getSourceEntity();
+    EntityObject<T>  getSourceEntity();
 
-    void bindInstanceEntityToContext(InstanceEntity instanceEntity);
-    void bindHoldingsEntityToContext(HoldingsEntity holdingsEntity);
-    void bindItemEntityToContext(ItemEntity itemEntity);
+    void bindEntityObjectToContext(EntityObject<T> entityObject);
 
-    InstanceEntity getBoundInstanceEntity();
-    HoldingsEntity getBoundHoldingsEntity();
-    ItemEntity getBoundItemEntity();
+    EntityObject<T> getBoundEntityObject(String entityType);
 
-    EntityType getLastBoundEntityType();
-    ContextObject<?> getLastBoundEntity();
+    EntityObject<T> getLastBoundEntityObject();
 }

@@ -6,51 +6,29 @@ import com.ts.louisiana.engine.api.JobExecutionContext;
 import com.ts.louisiana.engine.api.JobExecutionContextConstructor;
 import com.ts.louisiana.engine.api.JobHandler;
 import com.ts.louisiana.engine.api.JobTaskBuilder;
-import com.ts.louisiana.engine.api.MatchHandler;
 import com.ts.louisiana.engine.api.ProfileVisitor;
 import com.ts.louisiana.engine.api.ToolKit;
-import com.ts.louisiana.metadata.EntityType;
-import com.ts.louisiana.metadata.Job;
-import com.ts.louisiana.types.ContextObject;
-import com.ts.louisiana.types.MarcEntity;
+import com.ts.louisiana.metadata.api.Job;
+import com.ts.louisiana.types.EntityObject;
+import io.vertx.core.json.JsonObject;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 @Slf4j
-public class MarcJobTaskBuilderImpl implements JobTaskBuilder<MarcEntity>, ToolKit {
+public class MarcJobTaskBuilderImpl implements JobTaskBuilder<JsonObject>, ToolKit {
 
-    private Map<Pair<EntityType, EntityType>, MatchHandler<ContextObject<?>, ContextObject<?>>>
-            matchProcessorsByEntityType = new HashMap<>();
-
-    private Map<EntityType, ActionHandlerSet> actionHandlerSetByEntityType = new HashMap<>();
-
-    @Autowired
     private JobExecutionContextConstructor jobExecutionContextConstructor;
 
-    @Autowired
     private JobHandler jobHandler;
 
-    @Autowired
-    @Qualifier("instanceActionHandlerSet")
     private ActionHandlerSet instanceActionHandlerSet;
 
-    @Autowired
-    @Qualifier("holdingsActionHandlerSet")
-    private ActionHandlerSet holdingsActionHandlerSet;
-
     @Override
-    public Task<?> buildJobTask(Job job, MarcEntity sourceRecordEntity) {
-        //TODO: JobExecutionContext should be used here
-        JobExecutionContext jobExecutionContext =
-                jobExecutionContextConstructor.createJobExecutionContext(EntityType.MARC, sourceRecordEntity);
+    public Task<?> buildJobTask(Job job, EntityObject<JsonObject> sourceRecordEntity) {
+        JobExecutionContext<JsonObject> jobExecutionContext =
+                jobExecutionContextConstructor.createJobExecutionContext(sourceRecordEntity);
 
         ProfileVisitor profileVisitor = new MarcProfileVisitorV2Impl(this, jobExecutionContext);
         job.accept(profileVisitor);
@@ -65,25 +43,23 @@ public class MarcJobTaskBuilderImpl implements JobTaskBuilder<MarcEntity>, ToolK
     }
 
     @Override
-    public <P, R> MatchHandler<P, R> getMatchHandler(EntityType from, EntityType to) {
-        MatchHandler<P, R> matchHandler = (MatchHandler<P, R>) matchProcessorsByEntityType.get(Pair.of(from, to));
-
-        return matchHandler;
+    public ActionHandlerSet getActionHandlerSet(String entityType) {
+        return instanceActionHandlerSet;
     }
 
-    @Override
-    public ActionHandlerSet getActionHandlerSet(EntityType entityType) {
-        return actionHandlerSetByEntityType.get(entityType);
+    @Autowired
+    public void setJobExecutionContextConstructor(JobExecutionContextConstructor jobExecutionContextConstructor) {
+        this.jobExecutionContextConstructor = jobExecutionContextConstructor;
     }
 
-    @PostConstruct
-    private void init() {
-//
-        // TODO: fill matchProcessorsByEntityType here
-//
-        actionHandlerSetByEntityType.put(EntityType.INSTANCE, instanceActionHandlerSet);
-        actionHandlerSetByEntityType.put(EntityType.HOLDINGS, holdingsActionHandlerSet);
-
-
+    @Autowired
+    public void setJobHandler(JobHandler jobHandler) {
+        this.jobHandler = jobHandler;
     }
+
+    @Autowired
+    public void setInstanceActionHandlerSet(ActionHandlerSet instanceActionHandlerSet) {
+        this.instanceActionHandlerSet = instanceActionHandlerSet;
+    }
+
 }

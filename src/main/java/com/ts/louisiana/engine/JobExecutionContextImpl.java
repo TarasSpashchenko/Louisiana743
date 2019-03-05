@@ -1,86 +1,47 @@
 package com.ts.louisiana.engine;
 
 import com.ts.louisiana.engine.api.JobExecutionContext;
-import com.ts.louisiana.metadata.EntityType;
-import com.ts.louisiana.types.ContextObject;
-import com.ts.louisiana.types.HoldingsEntity;
-import com.ts.louisiana.types.InstanceEntity;
-import com.ts.louisiana.types.ItemEntity;
+import com.ts.louisiana.types.EntityObject;
+import io.vertx.core.json.JsonObject;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class JobExecutionContextImpl implements JobExecutionContext {
-    //???
-    private final ConcurrentMap<Object, Object> contextStorage = new ConcurrentHashMap<>();
+public class JobExecutionContextImpl<T> implements JobExecutionContext<T> {
+    private final EntityObject<T> sourceEntityObject;
+    private final ConcurrentMap<String, EntityObject<T>> contextStorage = new ConcurrentHashMap<>();
 
-    private final Object sourceEntity;
-    private final EntityType sourceEntityType;
+    private volatile EntityObject<T> lastBoundEntityObject;
 
-    private volatile InstanceEntity instanceEntity;
-    private volatile HoldingsEntity holdingsEntity;
-    private volatile ItemEntity itemEntity;
-
-    private volatile EntityType lastBoundEntityType;
-    private volatile ContextObject<?> lastBoundEntity;
-
-
-
-    public <T> JobExecutionContextImpl(EntityType sourceEntityType, T sourceEntity) {
-        this.sourceEntityType = sourceEntityType;
-        this.sourceEntity = sourceEntity;
+    public JobExecutionContextImpl(EntityObject<T> sourceEntityObject) {
+        super();
+        this.sourceEntityObject = sourceEntityObject;
     }
 
     @Override
-    public EntityType getSourceEntityType() {
-        return sourceEntityType;
+    public String getSourceEntityType() {
+        return sourceEntityObject.getEntityType();
     }
 
     @Override
-    public <T> T getSourceEntity() {
-        return (T) sourceEntity;
+    public EntityObject<T> getSourceEntity() {
+        return sourceEntityObject;
     }
 
     @Override
-    public void bindInstanceEntityToContext(InstanceEntity instanceEntity) {
-        lastBoundEntity = this.instanceEntity = instanceEntity;
-        lastBoundEntityType = EntityType.INSTANCE;
+    public void bindEntityObjectToContext(EntityObject<T> entityObject) {
+        contextStorage.put(entityObject.getEntityType(), entityObject);
+        lastBoundEntityObject = entityObject;
     }
 
     @Override
-    public void bindHoldingsEntityToContext(HoldingsEntity holdingsEntity) {
-        lastBoundEntity = this.holdingsEntity = holdingsEntity;
-        lastBoundEntityType = EntityType.HOLDINGS;
+    public EntityObject<T> getBoundEntityObject(String entityType) {
+        return contextStorage.get(entityType);
     }
 
     @Override
-    public void bindItemEntityToContext(ItemEntity itemEntity) {
-        lastBoundEntity = this.itemEntity = itemEntity;
-        lastBoundEntityType = EntityType.ITEM;
+    public EntityObject<T> getLastBoundEntityObject() {
+        return lastBoundEntityObject;
     }
 
-    @Override
-    public InstanceEntity getBoundInstanceEntity() {
-        return instanceEntity;
-    }
-
-    @Override
-    public HoldingsEntity getBoundHoldingsEntity() {
-        return holdingsEntity;
-    }
-
-    @Override
-    public ItemEntity getBoundItemEntity() {
-        return itemEntity;
-    }
-
-    @Override
-    public EntityType getLastBoundEntityType() {
-        return lastBoundEntityType;
-    }
-
-    @Override
-    public ContextObject<?> getLastBoundEntity() {
-        return lastBoundEntity;
-    }
 }
