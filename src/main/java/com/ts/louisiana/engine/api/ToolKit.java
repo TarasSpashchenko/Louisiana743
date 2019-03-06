@@ -1,10 +1,10 @@
 package com.ts.louisiana.engine.api;
 
-public interface ToolKit {
+public interface ToolKit<T> {
     JobHandler getJobHandler();
 
-//    <P, R> MatchHandler<P, R> getMatchHandler(EntityType from, EntityType to);
+    MatchHandler<T> getMatchHandler(String entityType);
 
-    ActionHandlerSet getActionHandlerSet(String entityType);
+    ActionHandlerSet<T> getActionHandlerSet(String entityType);
 
 }

@@ -4,6 +4,7 @@ import com.ts.louisiana.engine.api.JobExecutionContext;
 import com.ts.louisiana.types.EntityObject;
 import io.vertx.core.json.JsonObject;
 
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -29,9 +30,13 @@ public class JobExecutionContextImpl<T> implements JobExecutionContext<T> {
     }
 
     @Override
-    public void bindEntityObjectToContext(EntityObject<T> entityObject) {
-        contextStorage.put(entityObject.getEntityType(), entityObject);
+    public EntityObject<T> bindEntityObjectToContext(EntityObject<T> entityObject) {
         lastBoundEntityObject = entityObject;
+        if (Objects.nonNull(lastBoundEntityObject)) {
+            contextStorage.put(entityObject.getEntityType(), entityObject);
+        }
+
+        return lastBoundEntityObject;
     }
 
     @Override

@@ -13,8 +13,6 @@ import com.ts.louisiana.metadata.api.EntityDefinition;
 import com.ts.louisiana.types.EntityObject;
 import io.vertx.core.json.JsonObject;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,11 +76,11 @@ public class SimpleActionHandlerSetImpl implements ActionHandlerSet<JsonObject> 
                         .flatMap(entityDefinition.getTaskName(RETRIEVE_MASTER_TASK_NAME_ALIAS),
                                 entityObject -> Objects.nonNull(entityObject) ?
                                         Task.callable(entityDefinition.getTaskName(RETRIEVE_MASTER_FROM_CONTEXT_TASK_NAME_ALIAS), () -> entityObject) :
-                                        Task.callable(entityDefinition.getTaskName(RETRIEVE_MASTER_FROM_REPOSITORY_TASK_NAME_ALIAS), () -> {
-                                            EntityObject<JsonObject> masterEntityObject = entityRepository.findByEntityObject(masterEntityType, composite.currentEntityObject);
-                                            localJobExecutionContext.bindEntityObjectToContext(masterEntityObject);
-                                            return masterEntityObject;
-                                        }))
+                                        Task.callable(entityDefinition.getTaskName(RETRIEVE_MASTER_FROM_REPOSITORY_TASK_NAME_ALIAS), () -> entityRepository.findByEntityObject(masterEntityType, composite.currentEntityObject))
+                                                .map(entityDefinition.getTaskName(BIND_MASTER_TASK_NAME_ALIAS), masterEntityObject -> {
+                                                    localJobExecutionContext.bindEntityObjectToContext(masterEntityObject);
+                                                    return masterEntityObject;
+                                                }))
                         .flatMap(entityDefinition.getTaskName(WALK_UP_THE_TREE_TASK_NAME_ALIAS), nextEntityObject ->
                                 walkUpTheTree(new Composite317(localRequiredEntityType, nextEntityObject, localJobExecutionContext)));
     }
@@ -94,19 +92,6 @@ public class SimpleActionHandlerSetImpl implements ActionHandlerSet<JsonObject> 
         Task<EntityObject<JsonObject>> checkEntityObject = Task.callable(entityDefinition.getTaskName(CHECK_IN_CONTEXT_TASK_NAME_ALIAS),
                 () -> jobExecutionContext.getBoundEntityObject(entityType));
 
-
-//        Task<Composite317> compositeTask = Task.callable(/*entityDefinition.getTaskName(RETRIEVE_TASK_NAME_ALIAS)*/"TODO: Task Name ???", () -> {
-//            Composite317 composite = new Composite317();
-//            composite.setJobExecutionContext(jobExecutionContext);
-//            composite.setRequiredEntityType(entityType);
-//            composite.currentEntityObject = jobExecutionContext.getLastBoundEntityObject();
-//            return composite;
-//        });
-
-//        return checkEntityObject.flatMap(entityDefinition.getTaskName(RETRIEVE_TASK_NAME_ALIAS),
-//                entityObject -> Objects.nonNull(entityObject) ?
-//                        Task.callable(entityDefinition.getTaskName(RETRIEVE_FROM_CONTEXT_TASK_NAME_ALIAS), () -> entityObject) :
-//                        compositeTask.flatMap(entityDefinition.getTaskName(WALK_UP_THE_TREE_TASK_NAME_ALIAS), this::walkUpTheTree));
         return checkEntityObject.flatMap(entityDefinition.getTaskName(RETRIEVE_TASK_NAME_ALIAS),
                 entityObject -> Objects.nonNull(entityObject) ?
                         Task.callable(entityDefinition.getTaskName(RETRIEVE_FROM_CONTEXT_TASK_NAME_ALIAS), () -> entityObject) :

@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.ts.louisiana.engine.api.ActionHandlerSet.BIND_MASTER_TASK_NAME_ALIAS;
 import static com.ts.louisiana.engine.api.ActionHandlerSet.BIND_TASK_NAME_ALIAS;
 import static com.ts.louisiana.engine.api.ActionHandlerSet.CHECK_IN_CONTEXT_TASK_NAME_ALIAS;
 import static com.ts.louisiana.engine.api.ActionHandlerSet.CHECK_MASTER_IN_CONTEXT_TASK_NAME_ALIAS;
@@ -83,6 +84,7 @@ public class MetadataManagerStubImpl implements MetadataManager {
         taskNames.put(CHECK_MASTER_IN_CONTEXT_TASK_NAME_ALIAS, "Check for an Instance in context");
         taskNames.put(RETRIEVE_MASTER_FROM_CONTEXT_TASK_NAME_ALIAS, "Retrieve an Instance from context");
         taskNames.put(RETRIEVE_MASTER_FROM_REPOSITORY_TASK_NAME_ALIAS, "Retrieve an Instance from repository");
+        taskNames.put(BIND_MASTER_TASK_NAME_ALIAS, "Bind the Instance to context");
 
         taskNames.put(WALK_UP_THE_TREE_TASK_NAME_ALIAS, "Walk up the tree...");
 
@@ -101,6 +103,7 @@ public class MetadataManagerStubImpl implements MetadataManager {
         taskNames.put(CHECK_MASTER_IN_CONTEXT_TASK_NAME_ALIAS, "Check for a Holdings in context");
         taskNames.put(RETRIEVE_MASTER_FROM_CONTEXT_TASK_NAME_ALIAS, "Retrieve a Holdings from context");
         taskNames.put(RETRIEVE_MASTER_FROM_REPOSITORY_TASK_NAME_ALIAS, "Retrieve a Holdings from repository");
+        taskNames.put(BIND_MASTER_TASK_NAME_ALIAS, "Bind the Holdings to context");
 
         taskNames.put(WALK_UP_THE_TREE_TASK_NAME_ALIAS, "Walk up the tree...");
 
@@ -121,6 +124,7 @@ public class MetadataManagerStubImpl implements MetadataManager {
         taskNames.put(CHECK_MASTER_IN_CONTEXT_TASK_NAME_ALIAS, "Check for an Item in context");
         taskNames.put(RETRIEVE_MASTER_FROM_CONTEXT_TASK_NAME_ALIAS, "Retrieve an Item from context");
         taskNames.put(RETRIEVE_MASTER_FROM_REPOSITORY_TASK_NAME_ALIAS, "Retrieve an Item from repository");
+        taskNames.put(BIND_MASTER_TASK_NAME_ALIAS, "Bind the Item to context");
 
         taskNames.put(WALK_UP_THE_TREE_TASK_NAME_ALIAS, "Walk up the tree...");
 

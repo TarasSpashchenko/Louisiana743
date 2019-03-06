@@ -20,6 +20,7 @@ public interface ActionHandlerSet<T> {
     String CHECK_MASTER_IN_CONTEXT_TASK_NAME_ALIAS = "checkMasterTaskAlias";
     String RETRIEVE_MASTER_FROM_CONTEXT_TASK_NAME_ALIAS = "retrieveMasterFromContextTaskNameAlias";
     String RETRIEVE_MASTER_FROM_REPOSITORY_TASK_NAME_ALIAS = "retrieveMasterFromRepositoryTaskNameAlias";
+    String BIND_MASTER_TASK_NAME_ALIAS = "bindMasterTaskNameAlias";
 
     String WALK_UP_THE_TREE_TASK_NAME_ALIAS = "walkUpTheTreeTaskNameAlias";
 

@@ -6,6 +6,7 @@ import com.ts.louisiana.engine.api.JobExecutionContext;
 import com.ts.louisiana.engine.api.JobExecutionContextConstructor;
 import com.ts.louisiana.engine.api.JobHandler;
 import com.ts.louisiana.engine.api.JobTaskBuilder;
+import com.ts.louisiana.engine.api.MatchHandler;
 import com.ts.louisiana.engine.api.ProfileVisitor;
 import com.ts.louisiana.engine.api.ToolKit;
 import com.ts.louisiana.metadata.api.Job;
@@ -17,13 +18,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class MarcJobTaskBuilderImpl implements JobTaskBuilder<JsonObject>, ToolKit {
+public class MarcJobTaskBuilderImpl implements JobTaskBuilder<JsonObject>, ToolKit<JsonObject> {
 
     private JobExecutionContextConstructor jobExecutionContextConstructor;
 
     private JobHandler jobHandler;
 
-    private ActionHandlerSet instanceActionHandlerSet;
+    private ActionHandlerSet<JsonObject> instanceActionHandlerSet;
+
+    private MatchHandler<JsonObject> matchHandler;
 
     @Override
     public Task<?> buildJobTask(Job job, EntityObject<JsonObject> sourceRecordEntity) {
@@ -43,7 +46,12 @@ public class MarcJobTaskBuilderImpl implements JobTaskBuilder<JsonObject>, ToolK
     }
 
     @Override
-    public ActionHandlerSet getActionHandlerSet(String entityType) {
+    public MatchHandler<JsonObject> getMatchHandler(String entityType) {
+        return matchHandler;
+    }
+
+    @Override
+    public ActionHandlerSet<JsonObject> getActionHandlerSet(String entityType) {
         return instanceActionHandlerSet;
     }
 
@@ -58,8 +66,13 @@ public class MarcJobTaskBuilderImpl implements JobTaskBuilder<JsonObject>, ToolK
     }
 
     @Autowired
-    public void setInstanceActionHandlerSet(ActionHandlerSet instanceActionHandlerSet) {
+    public void setInstanceActionHandlerSet(ActionHandlerSet<JsonObject> instanceActionHandlerSet) {
         this.instanceActionHandlerSet = instanceActionHandlerSet;
+    }
+
+    @Autowired
+    public void setMatchHandler(MatchHandler<JsonObject> matchHandler) {
+        this.matchHandler = matchHandler;
     }
 
 }

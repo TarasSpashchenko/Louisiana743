@@ -7,7 +7,7 @@ public interface JobExecutionContext<T> {
 
     EntityObject<T>  getSourceEntity();
 
-    void bindEntityObjectToContext(EntityObject<T> entityObject);
+    EntityObject<T> bindEntityObjectToContext(EntityObject<T> entityObject);
 
     EntityObject<T> getBoundEntityObject(String entityType);
 

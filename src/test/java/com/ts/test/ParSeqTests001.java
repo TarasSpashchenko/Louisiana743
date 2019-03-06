@@ -6,6 +6,7 @@ import com.linkedin.parseq.Task;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -99,4 +100,16 @@ public class ParSeqTests001 {
         System.out.println("x:" + x + " y: " + y);
     }
 
+
+    @Test
+    public void testInput() {
+        try(Scanner scanner = new Scanner(System.in)) {
+            System.out.println("Hello world:");
+
+            int i = scanner.nextInt();
+            System.out.println(i);
+
+            System.out.println("Hello world!");
+        }
+    }
 }
