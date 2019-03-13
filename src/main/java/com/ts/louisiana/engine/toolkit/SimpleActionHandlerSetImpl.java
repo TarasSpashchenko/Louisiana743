@@ -20,6 +20,20 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
+import static com.ts.louisiana.engine.api.MetadataManager.BIND_MASTER_TASK_NAME_ALIAS;
+import static com.ts.louisiana.engine.api.MetadataManager.BIND_TASK_NAME_ALIAS;
+import static com.ts.louisiana.engine.api.MetadataManager.CHECK_IN_CONTEXT_TASK_NAME_ALIAS;
+import static com.ts.louisiana.engine.api.MetadataManager.CHECK_MASTER_IN_CONTEXT_TASK_NAME_ALIAS;
+import static com.ts.louisiana.engine.api.MetadataManager.CREATE_TASK_NAME_ALIAS;
+import static com.ts.louisiana.engine.api.MetadataManager.MAP_TASK_NAME_ALIAS;
+import static com.ts.louisiana.engine.api.MetadataManager.RETRIEVE_FROM_CONTEXT_TASK_NAME_ALIAS;
+import static com.ts.louisiana.engine.api.MetadataManager.RETRIEVE_MASTER_FROM_CONTEXT_TASK_NAME_ALIAS;
+import static com.ts.louisiana.engine.api.MetadataManager.RETRIEVE_MASTER_FROM_REPOSITORY_TASK_NAME_ALIAS;
+import static com.ts.louisiana.engine.api.MetadataManager.RETRIEVE_MASTER_TASK_NAME_ALIAS;
+import static com.ts.louisiana.engine.api.MetadataManager.RETRIEVE_TASK_NAME_ALIAS;
+import static com.ts.louisiana.engine.api.MetadataManager.STORE_TASK_NAME_ALIAS;
+import static com.ts.louisiana.engine.api.MetadataManager.WALK_UP_THE_TREE_TASK_NAME_ALIAS;
+
 @Component
 @Slf4j
 public class SimpleActionHandlerSetImpl implements ActionHandlerSet<JsonObject> {

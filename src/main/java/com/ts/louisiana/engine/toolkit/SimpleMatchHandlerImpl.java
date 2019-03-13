@@ -6,6 +6,7 @@ import com.ts.louisiana.engine.api.JobExecutionContext;
 import com.ts.louisiana.engine.api.MatchConditionToQueryCriteriaConverter;
 import com.ts.louisiana.engine.api.MatchHandler;
 import com.ts.louisiana.engine.api.MetadataManager;
+import com.ts.louisiana.metadata.api.EntityDefinition;
 import com.ts.louisiana.metadata.api.Match;
 import io.vertx.core.json.JsonObject;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+
+import static com.ts.louisiana.engine.api.MetadataManager.BIND_TASK_NAME_ALIAS;
+import static com.ts.louisiana.engine.api.MetadataManager.MATCH_CRITERIA_TO_QUERY_CRITERIA_TASK_NAME_ALIAS;
+import static com.ts.louisiana.engine.api.MetadataManager.MATCH_FORK_TASK_NAME_ALIAS;
+import static com.ts.louisiana.engine.api.MetadataManager.RETRIEVE_FROM_REPOSITORY_TASK_NAME_ALIAS;
 
 @Component
 @Slf4j
@@ -24,17 +30,27 @@ public class SimpleMatchHandlerImpl<T> implements MatchHandler<JsonObject> {
 
     private EntityRepository<JsonObject> entityRepository;
 
-    private Task<Boolean> processMatch(Match match, JobExecutionContext<JsonObject> jobExecutionContext) {
-        return Task.callable("TODO: Convert MatchCriteria to QueryCriteria", () -> matchConditionToQueryCriteriaConverter.convertMatchConditionToQueryCriteria(match, jobExecutionContext))
-                .map("TODO: Retrieve Entity from Repository", queryCriteria -> entityRepository.findByQueryCriteria(match.getMatchEntityType(), queryCriteria))
-                .map("TODO: Bind Entity to Context", entityObject -> Objects.nonNull(jobExecutionContext.bindEntityObjectToContext(entityObject)));
-    }
-
+//    private Task<Boolean> processMatch(Match match, JobExecutionContext<JsonObject> jobExecutionContext) {
+//        String matchEntityType = match.getMatchEntityType();
+//        EntityDefinition entityDefinition = metadataManager.getEntityDefinition(matchEntityType);
+//
+//        return Task.callable(entityDefinition.getTaskName(MATCH_CRITERIA_TO_QUERY_CRITERIA_TASK_NAME_ALIAS),
+//                () -> matchConditionToQueryCriteriaConverter.convertMatchConditionToQueryCriteria(match, jobExecutionContext))
+//                .map(entityDefinition.getTaskName(RETRIEVE_FROM_REPOSITORY_TASK_NAME_ALIAS), queryCriteria -> entityRepository.findByQueryCriteria(matchEntityType, queryCriteria))
+//                .map(entityDefinition.getTaskName(BIND_TASK_NAME_ALIAS), entityObject -> Objects.nonNull(jobExecutionContext.bindEntityObjectToContext(entityObject)));
+//    }
 
     @Override
     public Task<Void> match(Match match, JobExecutionContext<JsonObject> jobExecutionContext, Task<Void> onMatchActionSequence, Task<Void> onNotMatchActionSequence) {
-        return  processMatch(match, jobExecutionContext)
-                .flatMap("TODO: Match Fork", matchFound -> Boolean.TRUE.equals(matchFound) ? onMatchActionSequence : onNotMatchActionSequence);
+        String matchEntityType = match.getMatchEntityType();
+        EntityDefinition entityDefinition = metadataManager.getEntityDefinition(matchEntityType);
+
+        Task<Boolean> matchTask = Task.callable(entityDefinition.getTaskName(MATCH_CRITERIA_TO_QUERY_CRITERIA_TASK_NAME_ALIAS),
+                () -> matchConditionToQueryCriteriaConverter.convertMatchConditionToQueryCriteria(match, jobExecutionContext))
+                .map(entityDefinition.getTaskName(RETRIEVE_FROM_REPOSITORY_TASK_NAME_ALIAS), queryCriteria -> entityRepository.findByQueryCriteria(matchEntityType, queryCriteria))
+                .map(entityDefinition.getTaskName(BIND_TASK_NAME_ALIAS), entityObject -> Objects.nonNull(jobExecutionContext.bindEntityObjectToContext(entityObject)));
+
+        return matchTask.flatMap(entityDefinition.getTaskName(MATCH_FORK_TASK_NAME_ALIAS), matchFound -> Boolean.TRUE.equals(matchFound) ? onMatchActionSequence : onNotMatchActionSequence);
     }
 
     @Autowired

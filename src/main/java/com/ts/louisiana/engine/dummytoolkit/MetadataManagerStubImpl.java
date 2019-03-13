@@ -11,20 +11,6 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.ts.louisiana.engine.api.ActionHandlerSet.BIND_MASTER_TASK_NAME_ALIAS;
-import static com.ts.louisiana.engine.api.ActionHandlerSet.BIND_TASK_NAME_ALIAS;
-import static com.ts.louisiana.engine.api.ActionHandlerSet.CHECK_IN_CONTEXT_TASK_NAME_ALIAS;
-import static com.ts.louisiana.engine.api.ActionHandlerSet.CHECK_MASTER_IN_CONTEXT_TASK_NAME_ALIAS;
-import static com.ts.louisiana.engine.api.ActionHandlerSet.CREATE_TASK_NAME_ALIAS;
-import static com.ts.louisiana.engine.api.ActionHandlerSet.MAP_TASK_NAME_ALIAS;
-import static com.ts.louisiana.engine.api.ActionHandlerSet.RETRIEVE_FROM_CONTEXT_TASK_NAME_ALIAS;
-import static com.ts.louisiana.engine.api.ActionHandlerSet.RETRIEVE_MASTER_FROM_CONTEXT_TASK_NAME_ALIAS;
-import static com.ts.louisiana.engine.api.ActionHandlerSet.RETRIEVE_MASTER_FROM_REPOSITORY_TASK_NAME_ALIAS;
-import static com.ts.louisiana.engine.api.ActionHandlerSet.RETRIEVE_MASTER_TASK_NAME_ALIAS;
-import static com.ts.louisiana.engine.api.ActionHandlerSet.RETRIEVE_TASK_NAME_ALIAS;
-import static com.ts.louisiana.engine.api.ActionHandlerSet.STORE_TASK_NAME_ALIAS;
-import static com.ts.louisiana.engine.api.ActionHandlerSet.WALK_UP_THE_TREE_TASK_NAME_ALIAS;
-
 
 //import org.springframework.beans.factory.DisposableBean;
 //import org.springframework.beans.factory.InitializingBean;
@@ -58,6 +44,7 @@ public class MetadataManagerStubImpl implements MetadataManager {
         taskNames.put(RETRIEVE_TASK_NAME_ALIAS, "Retrieve an Instance");
         taskNames.put(CHECK_IN_CONTEXT_TASK_NAME_ALIAS, "Check for an Instance in context");
         taskNames.put(RETRIEVE_FROM_CONTEXT_TASK_NAME_ALIAS, "Retrieve an Instance from context");
+        taskNames.put(RETRIEVE_FROM_REPOSITORY_TASK_NAME_ALIAS, "Retrieve an Instance from repository");
         taskNames.put(MAP_TASK_NAME_ALIAS, "Map data to the Instance");
         taskNames.put(STORE_TASK_NAME_ALIAS, "Store the Instance");
         taskNames.put(BIND_TASK_NAME_ALIAS, "Bind the Instance to context");
@@ -68,6 +55,8 @@ public class MetadataManagerStubImpl implements MetadataManager {
         taskNames.put(RETRIEVE_MASTER_FROM_REPOSITORY_TASK_NAME_ALIAS, "WARNING!!! Retrieve a master from repository");
 
         taskNames.put(WALK_UP_THE_TREE_TASK_NAME_ALIAS, "Walk up the tree...");
+        taskNames.put(MATCH_CRITERIA_TO_QUERY_CRITERIA_TASK_NAME_ALIAS, "Convert MatchCriteria to QueryCriteria");
+        taskNames.put(MATCH_FORK_TASK_NAME_ALIAS, "Match Fork");
 
         knownEntities.put(INSTANCE, EntityDefinitionImpl.builder().entityType(INSTANCE).taskNames(taskNames).build());
 
@@ -76,6 +65,7 @@ public class MetadataManagerStubImpl implements MetadataManager {
         taskNames.put(RETRIEVE_TASK_NAME_ALIAS, "Retrieve a Holdings");
         taskNames.put(CHECK_IN_CONTEXT_TASK_NAME_ALIAS, "Check for a Holdings in context");
         taskNames.put(RETRIEVE_FROM_CONTEXT_TASK_NAME_ALIAS, "Retrieve a Holdings from context");
+        taskNames.put(RETRIEVE_FROM_REPOSITORY_TASK_NAME_ALIAS, "Retrieve a Holdings from repository");
         taskNames.put(MAP_TASK_NAME_ALIAS, "Map data to the Holdings");
         taskNames.put(STORE_TASK_NAME_ALIAS, "Store the Holdings");
         taskNames.put(BIND_TASK_NAME_ALIAS, "Bind the Holdings to context");
@@ -87,6 +77,8 @@ public class MetadataManagerStubImpl implements MetadataManager {
         taskNames.put(BIND_MASTER_TASK_NAME_ALIAS, "Bind the Instance to context");
 
         taskNames.put(WALK_UP_THE_TREE_TASK_NAME_ALIAS, "Walk up the tree...");
+        taskNames.put(MATCH_CRITERIA_TO_QUERY_CRITERIA_TASK_NAME_ALIAS, "Convert MatchCriteria to QueryCriteria");
+        taskNames.put(MATCH_FORK_TASK_NAME_ALIAS, "Match Fork");
 
         knownEntities.put(HOLDINGS, EntityDefinitionImpl.builder().entityType(HOLDINGS).masterEntityType(INSTANCE).taskNames(taskNames).build());
 
@@ -95,6 +87,7 @@ public class MetadataManagerStubImpl implements MetadataManager {
         taskNames.put(RETRIEVE_TASK_NAME_ALIAS, "Retrieve an Item");
         taskNames.put(CHECK_IN_CONTEXT_TASK_NAME_ALIAS, "Check for an Item in context");
         taskNames.put(RETRIEVE_FROM_CONTEXT_TASK_NAME_ALIAS, "Retrieve an Item from context");
+        taskNames.put(RETRIEVE_FROM_REPOSITORY_TASK_NAME_ALIAS, "Retrieve an Item from repository");
         taskNames.put(MAP_TASK_NAME_ALIAS, "Map data to the Item");
         taskNames.put(STORE_TASK_NAME_ALIAS, "Store the Item");
         taskNames.put(BIND_TASK_NAME_ALIAS, "Bind the Item to context");
@@ -106,6 +99,8 @@ public class MetadataManagerStubImpl implements MetadataManager {
         taskNames.put(BIND_MASTER_TASK_NAME_ALIAS, "Bind the Holdings to context");
 
         taskNames.put(WALK_UP_THE_TREE_TASK_NAME_ALIAS, "Walk up the tree...");
+        taskNames.put(MATCH_CRITERIA_TO_QUERY_CRITERIA_TASK_NAME_ALIAS, "Convert MatchCriteria to QueryCriteria");
+        taskNames.put(MATCH_FORK_TASK_NAME_ALIAS, "Match Fork");
 
         knownEntities.put(ITEM, EntityDefinitionImpl.builder().entityType(ITEM).masterEntityType(HOLDINGS).taskNames(taskNames).build());
 
@@ -116,6 +111,7 @@ public class MetadataManagerStubImpl implements MetadataManager {
         taskNames.put(RETRIEVE_TASK_NAME_ALIAS, "Retrieve an Order line");
         taskNames.put(CHECK_IN_CONTEXT_TASK_NAME_ALIAS, "Check for an Order line in context");
         taskNames.put(RETRIEVE_FROM_CONTEXT_TASK_NAME_ALIAS, "Retrieve an Order line from context");
+        taskNames.put(RETRIEVE_FROM_REPOSITORY_TASK_NAME_ALIAS, "Retrieve an Order line from repository");
         taskNames.put(MAP_TASK_NAME_ALIAS, "Map data to the Order line");
         taskNames.put(STORE_TASK_NAME_ALIAS, "Store the Order line");
         taskNames.put(BIND_TASK_NAME_ALIAS, "Bind the Item to Order line");
@@ -127,6 +123,8 @@ public class MetadataManagerStubImpl implements MetadataManager {
         taskNames.put(BIND_MASTER_TASK_NAME_ALIAS, "Bind the Item to context");
 
         taskNames.put(WALK_UP_THE_TREE_TASK_NAME_ALIAS, "Walk up the tree...");
+        taskNames.put(MATCH_CRITERIA_TO_QUERY_CRITERIA_TASK_NAME_ALIAS, "Convert MatchCriteria to QueryCriteria");
+        taskNames.put(MATCH_FORK_TASK_NAME_ALIAS, "Match Fork");
 
         knownEntities.put(ORDER_LINE, EntityDefinitionImpl.builder().entityType(ORDER_LINE).masterEntityType(ITEM).taskNames(taskNames).build());
 

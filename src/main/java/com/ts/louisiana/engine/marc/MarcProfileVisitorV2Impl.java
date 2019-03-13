@@ -34,24 +34,24 @@ public class MarcProfileVisitorV2Impl implements ProfileVisitor {
         lastTaskInChain = Task.action("Job Profile init()", () -> log.info("Job Profile init task competed"));
 
         for (Node child : job.getChildren()) {
-//            if (child instanceof Action) {
-                child.accept(this);
-//            }
+            child.accept(this);
         }
 
     }
 
     @Override
     public void visitMatch(Match match) {
+        log.info("visiting Match: {}", match);
+
         Task<Void> myLastTaskIChain = lastTaskInChain;
-        lastTaskInChain = null;
+        lastTaskInChain = Task.action("On Match branch init()", () -> log.info("On Match branch init task competed."));
 
         for (Node child : match.getMatchesChildren()) {
-                child.accept(this);
+            child.accept(this);
         }
 
         Task<Void> onMatchTask = lastTaskInChain;
-        lastTaskInChain = null;
+        lastTaskInChain = Task.action("On Non Match branch init()", () -> log.info("On Non Match branch init task competed."));
 
         for (Node child : match.getNonMatchesChildren()) {
             child.accept(this);
@@ -64,7 +64,7 @@ public class MarcProfileVisitorV2Impl implements ProfileVisitor {
 //                myLastTaskIChain.flatMap("and then " + match.getName(), o -> matchHandler.match(match, jobExecutionContext, onMatchTask, onNonMatchTask)):
 //                matchHandler.match(match, jobExecutionContext, onMatchTask, onNonMatchTask);
         lastTaskInChain = Objects.nonNull(myLastTaskIChain) ?
-                myLastTaskIChain.andThen("and then " + match.getName(), matchHandler.match(match, jobExecutionContext, onMatchTask, onNonMatchTask)):
+                myLastTaskIChain.andThen("and then " + match.getName(), matchHandler.match(match, jobExecutionContext, onMatchTask, onNonMatchTask)) :
                 matchHandler.match(match, jobExecutionContext, onMatchTask, onNonMatchTask);
     }
 
@@ -77,16 +77,11 @@ public class MarcProfileVisitorV2Impl implements ProfileVisitor {
 //                lastTaskInChain.flatMap("and then " + action.getName(), o -> actionHandlerSet.actionTask(action, jobExecutionContext)) :
 //                actionHandlerSet.actionTask(action, jobExecutionContext);
 
-        lastTaskInChain = Objects.nonNull(lastTaskInChain) ?
-                lastTaskInChain.andThen("and then " + action.getName(), actionHandlerSet.actionTask(action, jobExecutionContext)) :
-                actionHandlerSet.actionTask(action, jobExecutionContext);
+        lastTaskInChain = lastTaskInChain.andThen("and then " + action.getName(), actionHandlerSet.actionTask(action, jobExecutionContext));
 
         for (Node child : action.getChildren()) {
-//            if (child instanceof Action) {
-                child.accept(this);
-//            }
+            child.accept(this);
         }
-
     }
 
     @Override
