@@ -19,6 +19,9 @@ public class MapperStubImpl implements Mapper<JsonObject> {
             EntityObject<JsonObject> source,
             EntityObject<JsonObject> destination,
             JobExecutionContext<JsonObject> jobExecutionContext) {
+
+        log.info("\n\nData has been mapped from {} to {}.\n", source.getEntityType(), destination.getEntityType());
+
         return destination;
     }
 }

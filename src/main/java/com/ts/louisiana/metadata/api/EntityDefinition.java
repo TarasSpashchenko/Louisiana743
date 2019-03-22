@@ -5,5 +5,9 @@ public interface EntityDefinition {
 
     String getMasterEntityType();
 
+    String getReferenceToMasterFieldName();
+
     String getTaskName(String taskNameAlias);
+
+    EntityOperation getEntityOperation(String operationType);
 }

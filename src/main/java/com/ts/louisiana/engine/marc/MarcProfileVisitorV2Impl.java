@@ -31,7 +31,7 @@ public class MarcProfileVisitorV2Impl implements ProfileVisitor {
     @Override
     public void visitJob(Job job) {
         log.info("visiting Job: {}", job);
-        lastTaskInChain = Task.action("Job Profile init()", () -> log.info("Job Profile init task competed"));
+        lastTaskInChain = Task.action("Job Profile init()", () -> log.info("\n\nJob Profile init task competed\n"));
 
         for (Node child : job.getChildren()) {
             child.accept(this);
@@ -44,14 +44,14 @@ public class MarcProfileVisitorV2Impl implements ProfileVisitor {
         log.info("visiting Match: {}", match);
 
         Task<Void> myLastTaskIChain = lastTaskInChain;
-        lastTaskInChain = Task.action("On Match branch init()", () -> log.info("On Match branch init task competed."));
+        lastTaskInChain = Task.action("On Match branch init()", () -> log.info("\n\nOn Match branch init task competed.\n"));
 
         for (Node child : match.getMatchesChildren()) {
             child.accept(this);
         }
 
         Task<Void> onMatchTask = lastTaskInChain;
-        lastTaskInChain = Task.action("On Non Match branch init()", () -> log.info("On Non Match branch init task competed."));
+        lastTaskInChain = Task.action("On Non Match branch init()", () -> log.info("\n\nOn Non Match branch init task competed.\n"));
 
         for (Node child : match.getNonMatchesChildren()) {
             child.accept(this);
@@ -64,7 +64,7 @@ public class MarcProfileVisitorV2Impl implements ProfileVisitor {
 //                myLastTaskIChain.flatMap("and then " + match.getName(), o -> matchHandler.match(match, jobExecutionContext, onMatchTask, onNonMatchTask)):
 //                matchHandler.match(match, jobExecutionContext, onMatchTask, onNonMatchTask);
         lastTaskInChain = Objects.nonNull(myLastTaskIChain) ?
-                myLastTaskIChain.andThen("and then " + match.getName(), matchHandler.match(match, jobExecutionContext, onMatchTask, onNonMatchTask)) :
+                myLastTaskIChain.flatMap("and then " + match.getName(), o -> matchHandler.match(match, jobExecutionContext, onMatchTask, onNonMatchTask)) :
                 matchHandler.match(match, jobExecutionContext, onMatchTask, onNonMatchTask);
     }
 
@@ -77,7 +77,7 @@ public class MarcProfileVisitorV2Impl implements ProfileVisitor {
 //                lastTaskInChain.flatMap("and then " + action.getName(), o -> actionHandlerSet.actionTask(action, jobExecutionContext)) :
 //                actionHandlerSet.actionTask(action, jobExecutionContext);
 
-        lastTaskInChain = lastTaskInChain.andThen("and then " + action.getName(), actionHandlerSet.actionTask(action, jobExecutionContext));
+        lastTaskInChain = lastTaskInChain.flatMap("and then " + action.getName(), o -> actionHandlerSet.actionTask(action, jobExecutionContext));
 
         for (Node child : action.getChildren()) {
             child.accept(this);
