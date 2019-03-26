@@ -15,6 +15,12 @@ import org.springframework.stereotype.Component;
 public class MatchConditionToQueryCriteriaConverterStubImpl implements MatchConditionToQueryCriteriaConverter<JsonObject> {
     @Override
     public QueryCriteria convertMatchConditionToQueryCriteria(Match match, JobExecutionContext<JsonObject> jobExecutionContext) {
-        return new QueryCriteria() {};
+        log.info("\n\nQueryCriteria for {} has been created from MatchCriteria.\n", match.getMatchEntityType());
+        return new QueryCriteria() {
+            @Override
+            public String getFallbackResolution() {
+                return match.getMatchCriteria().getCriteriaDetails();
+            }
+        };
     }
 }

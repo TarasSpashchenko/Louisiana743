@@ -2,7 +2,9 @@ package com.ts.louisiana.engine.dummytoolkit;
 
 import com.ts.louisiana.engine.api.MetadataManager;
 import com.ts.louisiana.metadata.EntityDefinitionImpl;
+import com.ts.louisiana.metadata.EntityOperationImpl;
 import com.ts.louisiana.metadata.api.EntityDefinition;
+import com.ts.louisiana.metadata.api.EntityOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -26,7 +28,9 @@ public class MetadataManagerStubImpl implements MetadataManager {
     private static final String ITEM = "ITEM";
     private static final String ORDER = "ORDER";
     private static final String ORDER_LINE = "ORDER_LINE";
-    private static final String MARC_CAT  = "MARC_CAT";
+    private static final String INVOICE = "INVOICE";
+    //    private static final String ORDER_LINE = "ORDER_LINE";
+    private static final String MARC_CAT = "MARC_CAT";
 
     private final Map<String, EntityDefinition> knownEntities = new HashMap<>();
 
@@ -58,7 +62,32 @@ public class MetadataManagerStubImpl implements MetadataManager {
         taskNames.put(MATCH_CRITERIA_TO_QUERY_CRITERIA_TASK_NAME_ALIAS, "Convert MatchCriteria to QueryCriteria");
         taskNames.put(MATCH_FORK_TASK_NAME_ALIAS, "Match Fork");
 
-        knownEntities.put(INSTANCE, EntityDefinitionImpl.builder().entityType(INSTANCE).taskNames(taskNames).build());
+        Map<String, EntityOperation> entityOperations = new HashMap<>();
+        entityOperations.put("RETRIEVE", EntityOperationImpl.builder()
+                .operationType("RETRIEVE")
+                .verb(EntityOperation.Verb.GET)
+                .uri("/inventory/instances/{ID}")
+                .build());
+
+        entityOperations.put("CREATE", EntityOperationImpl.builder()
+                .operationType("CREATE")
+                .verb(EntityOperation.Verb.POST)
+                .uri("/inventory/instances")
+                .build());
+
+        entityOperations.put("UPDATE", EntityOperationImpl.builder()
+                .operationType("UPDATE")
+                .verb(EntityOperation.Verb.PUT)
+                .uri("/inventory/instances/{ID}")
+                .build());
+
+        entityOperations.put("DELETE", EntityOperationImpl.builder()
+                .operationType("DELETE")
+                .verb(EntityOperation.Verb.DELETE)
+                .uri("/inventory/instances/{ID}")
+                .build());
+
+        knownEntities.put(INSTANCE, EntityDefinitionImpl.builder().entityType(INSTANCE).taskNames(taskNames).entityOperations(entityOperations).build());
 
         taskNames = new HashMap<>();
         taskNames.put(CREATE_TASK_NAME_ALIAS, "Create a Holdings");
@@ -128,8 +157,30 @@ public class MetadataManagerStubImpl implements MetadataManager {
 
         knownEntities.put(ORDER_LINE, EntityDefinitionImpl.builder().entityType(ORDER_LINE).masterEntityType(ITEM).taskNames(taskNames).build());
 
-        knownEntities.put(MARC_CAT, EntityDefinitionImpl.builder().entityType(MARC_CAT).build());
+        taskNames = new HashMap<>();
+        taskNames.put(CREATE_TASK_NAME_ALIAS, "Create a MARCCat record");
+        taskNames.put(RETRIEVE_TASK_NAME_ALIAS, "Retrieve a MARCCat record");
+        taskNames.put(CHECK_IN_CONTEXT_TASK_NAME_ALIAS, "Check for a MARCCat record in context");
+        taskNames.put(RETRIEVE_FROM_CONTEXT_TASK_NAME_ALIAS, "Retrieve a MARCCat record from context");
+        taskNames.put(RETRIEVE_FROM_REPOSITORY_TASK_NAME_ALIAS, "Retrieve a MARCCat record from repository");
+        taskNames.put(MAP_TASK_NAME_ALIAS, "Map data to the MARCCat record");
+        taskNames.put(STORE_TASK_NAME_ALIAS, "Store the MARCCat record");
+        taskNames.put(BIND_TASK_NAME_ALIAS, "Bind the MARCCat record line");
+        knownEntities.put(MARC_CAT, EntityDefinitionImpl.builder().entityType(MARC_CAT).taskNames(taskNames).build());
+
+        taskNames = new HashMap<>();
+        taskNames.put(CREATE_TASK_NAME_ALIAS, "Create an Invoice");
+        taskNames.put(RETRIEVE_TASK_NAME_ALIAS, "Retrieve an Invoice");
+        taskNames.put(CHECK_IN_CONTEXT_TASK_NAME_ALIAS, "Check for an Invoice in context");
+        taskNames.put(RETRIEVE_FROM_CONTEXT_TASK_NAME_ALIAS, "Retrieve an Invoice from context");
+        taskNames.put(RETRIEVE_FROM_REPOSITORY_TASK_NAME_ALIAS, "Retrieve an Invoice from repository");
+        taskNames.put(MAP_TASK_NAME_ALIAS, "Map data to the Invoice");
+        taskNames.put(STORE_TASK_NAME_ALIAS, "Store the Invoice");
+        taskNames.put(BIND_TASK_NAME_ALIAS, "Bind the Invoice to context");
+        knownEntities.put(INVOICE, EntityDefinitionImpl.builder().entityType(INVOICE).taskNames(taskNames).build());
 
         knownEntities.put(MARC, EntityDefinitionImpl.builder().entityType(MARC).build());
+
+//        knownEntities.put("MY_NEW_ENTITY", EntityDefinitionImpl.builder().entityType("MY_NEW_ENTITY").build());
     }
 }
